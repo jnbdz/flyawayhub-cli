@@ -31,4 +31,13 @@ After it is built you can easily just run the output of the build: `./flyawayhub
 
 You can always rename it: `mv flyawayhub-cli flyawayhub`.
 
+If you want to know what options you have: 
+```bash
+flyawayhub-cli -h
+# or
+flyawayhub-cli --help
+```
+
+Like any other...
+
 Have fun in the terminal!
