@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -16,10 +17,25 @@ var versionCmd = &cobra.Command{
 	},
 }
 
+var scheduleCmd = &cobra.Command{
+	Use: "schedule",
+	Short: "Schedule return your flying reservations.",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(appName + " version " + version)
+	},
+}
+
 func init() {
 	var rootCmd = &cobra.Command{Use: "flyawayhub-cli"}
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(loginCmd)
+	rootCmd.AddCommand(logoutCmd)
+	rootCmd.AddCommand(scheduleCmd)
 	rootCmd.Execute()
+}
+
+func login() {
+
 }
 
 func Hello() string {
