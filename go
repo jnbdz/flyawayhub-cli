@@ -10,6 +10,14 @@ goVersion() {
 
 execGo() {
 	local version=$(goVersion)
-	podman run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp -v ~/.local/share/go/v${version}:/go golang:${version}
+	local goLib=~/.local/share/go/v${version}
+
+	if [ ! -d "${goLib}" ]
+	then
+		echo " > Create the directory for storing Go libraries"
+		mkdir -p ${goLib}
+	fi
+
+	podman run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp -v ~/.local/share/go/v${version}:/go golang:${version} go ${@}
 }
-execGo
+execGo ${@}
