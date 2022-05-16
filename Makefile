@@ -12,4 +12,8 @@ install:
 
 .PHONY: clean
 clean:
-	rm flyawayhub-cli
+	rm -f flyawayhub-cli
+
+.PHONY: uninstall
+uninstall:
+	rm -f ~/.local/bin/flyawayhub
