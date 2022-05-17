@@ -1,4 +1,5 @@
 SHELL := bash
+
 AppName = flyawayhub
 BuildName = ${AppName}-cli
 AppDir = ~/.local/bin/
