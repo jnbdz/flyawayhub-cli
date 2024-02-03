@@ -24,7 +24,7 @@ var (
 
 func sendCredentials(username, password string) {
 	// Load AWS configuration
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-west-2"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "unable to load SDK config, %v\n", err)
 		return
@@ -35,16 +35,6 @@ func sendCredentials(username, password string) {
 
 	// Replace these values with your Cognito app's details
 	clientId := ""
-
-	// Initiate the authentication request
-	/*authInput := &cognitoidentityprovider.InitiateAuthInput{
-		AuthFlow: types.AuthFlowTypeUserPasswordAuth, // Corrected enum value
-		AuthParameters: map[string]string{
-			"USERNAME": username,
-			"PASSWORD": password,
-		},
-		ClientId: aws.String(clientId),
-	}*/
 
 	// Perform the authentication request
 	authResp, err := svc.InitiateAuth(context.TODO(), &cognitoidentityprovider.InitiateAuthInput{
