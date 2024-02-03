@@ -34,6 +34,7 @@ var scheduleCmd = &cobra.Command{
 func init() {
 	cmd.InitCommands(rootCmd)
 	rootCmd.AddCommand(versionCmd, scheduleCmd)
+	//rootCmd.AddCommand(listReservationsCmd)
 	//var rootCmd = &cobra.Command{Use: "flyawayhub-cli"}
 	//rootCmd.AddCommand(versionCmd)
 	//rootCmd.AddCommand(loginCmd)
