@@ -10,8 +10,9 @@ import (
 
 // Extended session data to include additional organization details
 type SessionData struct {
+	AccessToken       string                `json:"access_token"`
+	Id                string                `json:"id"`
 	Token             string                `json:"token"`
-	OrganizationID    string                `json:"organizationId"`
 	Address           *string               `json:"address"`
 	City              *string               `json:"city"`
 	State             *string               `json:"state"`
@@ -99,7 +100,7 @@ func saveSession(data SessionData) error {
 }
 
 // loadSession loads session data from a file
-func loadSession() (*SessionData, error) {
+func LoadSession() (*SessionData, error) {
 	path, err := getSessionFilePath()
 	if err != nil {
 		return nil, err
@@ -150,5 +151,25 @@ func getSessionFilePath() (string, error) {
 		return "", fmt.Errorf("creating session directory: %w", err)
 	}
 
-	return filepath.Join(dir, "session.json"), nil
+	sessionFile := filepath.Join(dir, "session.json")
+
+	// Check if the session file exists, create it with {} if it doesn't
+	if _, err := os.Stat(sessionFile); os.IsNotExist(err) {
+		file, err := os.Create(sessionFile)
+		if err != nil {
+			return "", fmt.Errorf("creating session file: %w", err)
+		}
+		defer func(file *os.File) {
+			err := file.Close()
+			if err != nil {
+
+			}
+		}(file)
+
+		if _, err := file.WriteString("{}"); err != nil {
+			return "", fmt.Errorf("initializing session file: %w", err)
+		}
+	}
+
+	return sessionFile, nil
 }

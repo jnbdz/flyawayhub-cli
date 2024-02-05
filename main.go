@@ -31,9 +31,30 @@ var scheduleCmd = &cobra.Command{
 	},
 }
 
+var organizationsCmd = &cobra.Command{
+	Use:   "organizations",
+	Short: "Fetch and display organization information",
+	RunE: func(c *cobra.Command, args []string) error {
+		sessionData, err := cmd.LoadSession()
+		if err != nil {
+			return fmt.Errorf("loading session: %w", err)
+		}
+
+		return cmd.FetchOrganizationInfo(sessionData.AccessToken)
+	},
+}
+
+var reservationsCmd = &cobra.Command{
+	Use:   "reservations",
+	Short: "Fetch flying reservations for your organization",
+	Run: func(c *cobra.Command, args []string) {
+		cmd.HandleReservationsCommand() // Use cmd. to reference the function from the cmd package
+	},
+}
+
 func init() {
 	cmd.InitCommands(rootCmd)
-	rootCmd.AddCommand(versionCmd, scheduleCmd)
+	rootCmd.AddCommand(versionCmd, scheduleCmd, organizationsCmd, reservationsCmd)
 	//rootCmd.AddCommand(listReservationsCmd)
 	//var rootCmd = &cobra.Command{Use: "flyawayhub-cli"}
 	//rootCmd.AddCommand(versionCmd)
