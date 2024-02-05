@@ -16,9 +16,8 @@ import (
 )
 
 var (
-	appName = "Flyawayhub"
-	cfgFile string
-
+	appName  = "Flyawayhub"
+	cfgFile  string
 	username string
 )
 
@@ -34,7 +33,7 @@ func sendCredentials(username, password string) {
 	svc := cognitoidentityprovider.NewFromConfig(cfg)
 
 	// Replace these values with your Cognito app's details
-	clientId := ""
+	clientId := "" // <-- Replace with your actual client ID
 
 	// Perform the authentication request
 	authResp, err := svc.InitiateAuth(context.TODO(), &cognitoidentityprovider.InitiateAuthInput{
@@ -50,13 +49,11 @@ func sendCredentials(username, password string) {
 		return
 	}
 
-	// Handle the successful authentication response
-	// For demonstration purposes, printing the access token
-	fmt.Printf("Authentication successful. Access Token: %s\n", *authResp.AuthenticationResult.AccessToken)
-}
-
-func initConfig() {
-	// Existing configuration loading code
+	// Fetch and update session with organization info
+	if err := FetchOrganizationInfo(*authResp.AuthenticationResult.AccessToken); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to fetch organization info: %v\n", err)
+		// Decide how you want to handle this error. For now, just printing the error.
+	}
 }
 
 var loginCmd = &cobra.Command{
@@ -81,10 +78,6 @@ func login(cmd *cobra.Command, args []string) {
 
 	// Send credentials using the AWS SDK
 	sendCredentials(username, password)
-}
-
-func init() {
-	cobra.OnInitialize(initConfig)
 }
 
 func InitCommands(root *cobra.Command) {
