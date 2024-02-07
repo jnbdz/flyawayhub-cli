@@ -101,8 +101,9 @@ func fetchReservations(sessionData SessionData) {
 
 	// Now `flights` is populated with data from `body`, proceed to create the table
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date", "Flight Type", "Start", "End", "Aircraft", "Crew"})
+	table.SetHeader([]string{"#", "ID", "Date", "Flight Type", "Start", "End", "Aircraft", "Crew"})
 
+	var i = 0
 	for _, flight := range flights {
 		dateStr, _ := FormatTime(flight.StartTime, "Mon, Jan 2, 2006")
 		startTimeStr, _ := FormatTime(flight.StartTime, "1504")
@@ -110,6 +111,8 @@ func fetchReservations(sessionData SessionData) {
 		aircraft, crew := extractResourceDetails(flight.Resources)
 
 		row := []string{
+			strconv.Itoa(i),
+			flight.ID,
 			dateStr,
 			flight.FlightType.Name,
 			startTimeStr,
@@ -118,6 +121,7 @@ func fetchReservations(sessionData SessionData) {
 			crew,
 		}
 		table.Append(row)
+		i++
 	}
 
 	table.Render()
