@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 type ApiResponse struct {
@@ -53,10 +54,9 @@ func fetchNotifications(sessionData SessionData) {
 	// https://api.prod.flyawayhub.com/v1/notifications/all?page=0&limit=20
 	page := "0"
 	limit := "20"
-	url := config.APIEndpoint("notifications/all?=page=" + page + "&limit=" + limit)
+	reqURL := config.APIEndpoint("notifications/all?page=" + page + "&limit=" + limit)
 
 	client := &http.Client{}
-	reqURL := fmt.Sprintf(url, sessionData.Id)
 
 	req, err := http.NewRequest("GET", reqURL, nil)
 	if err != nil {
@@ -95,7 +95,7 @@ func fetchNotifications(sessionData SessionData) {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"#", "ID", "Message", "Short Message", "Notification Type Name", "Created At"})
+	table.SetHeader([]string{"#", "ID", "Message", "Short Message", "Notification Type Name", "Created At (Local Time)", "Created At (UTC)"})
 
 	var i = 0
 	for _, notification := range response.Models.Notifications {
@@ -105,7 +105,8 @@ func fetchNotifications(sessionData SessionData) {
 			notification.Message,
 			notification.ShortMessage,
 			notification.NotificationType.Name,
-			strconv.FormatInt(notification.CreatedAt, 10),
+			time.Unix(notification.CreatedAt, 0).Local().Format("2006-01-02 15:04:05"),
+			time.Unix(notification.CreatedAt, 0).UTC().Format("2006-01-02 15:04:05"),
 		}
 		table.Append(row)
 		i++
