@@ -76,9 +76,17 @@ var schedulesCmd = &cobra.Command{
 	},
 }
 
+var notificationsCmd = &cobra.Command{
+	Use:   "notifications",
+	Short: "Fetch flying notifications for your organization",
+	Run: func(c *cobra.Command, args []string) {
+		cmd.HandleNotificationsCommand() // Use cmd. to reference the function from the cmd package
+	},
+}
+
 func init() {
 	cmd.InitCommands(rootCmd)
-	rootCmd.AddCommand(versionCmd, scheduleCmd, organizationsCmd, reservationsCmd, membersCmd, sunInfoCmd, schedulesCmd)
+	rootCmd.AddCommand(versionCmd, scheduleCmd, organizationsCmd, reservationsCmd, membersCmd, sunInfoCmd, schedulesCmd, notificationsCmd)
 	//rootCmd.AddCommand(listReservationsCmd)
 	//var rootCmd = &cobra.Command{Use: "flyawayhub-cli"}
 	//rootCmd.AddCommand(versionCmd)
