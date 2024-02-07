@@ -52,9 +52,33 @@ var reservationsCmd = &cobra.Command{
 	},
 }
 
+var membersCmd = &cobra.Command{
+	Use:   "members",
+	Short: "Fetch flying members for your organization",
+	Run: func(c *cobra.Command, args []string) {
+		cmd.HandleMembersCommand() // Use cmd. to reference the function from the cmd package
+	},
+}
+
+var sunInfoCmd = &cobra.Command{
+	Use:   "suninfo",
+	Short: "Fetch flying sun info for your organization",
+	Run: func(c *cobra.Command, args []string) {
+		cmd.HandleSunInfoCommand() // Use cmd. to reference the function from the cmd package
+	},
+}
+
+var schedulesCmd = &cobra.Command{
+	Use:   "schedules",
+	Short: "Fetch flying schedules for your organization",
+	Run: func(c *cobra.Command, args []string) {
+		cmd.HandleSchedulesCommand() // Use cmd. to reference the function from the cmd package
+	},
+}
+
 func init() {
 	cmd.InitCommands(rootCmd)
-	rootCmd.AddCommand(versionCmd, scheduleCmd, organizationsCmd, reservationsCmd)
+	rootCmd.AddCommand(versionCmd, scheduleCmd, organizationsCmd, reservationsCmd, membersCmd, sunInfoCmd, schedulesCmd)
 	//rootCmd.AddCommand(listReservationsCmd)
 	//var rootCmd = &cobra.Command{Use: "flyawayhub-cli"}
 	//rootCmd.AddCommand(versionCmd)

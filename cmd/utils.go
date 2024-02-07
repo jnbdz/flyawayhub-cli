@@ -28,3 +28,10 @@ func FormatTime(unixTime int64, layout string) (string, error) {
 	t := time.Unix(unixTime, 0).Local()
 	return t.Format(layout), nil
 }
+
+func ReadableIsVaccinated(IsVaccinated int) string {
+	if IsVaccinated > 0 {
+		return "Yes"
+	}
+	return "No"
+}
