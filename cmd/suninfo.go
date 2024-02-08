@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"flyawayhub-cli/config"
+	"flyawayhub-cli/helpers"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 )
 
 type SunInfo struct {
@@ -82,17 +82,6 @@ func fetchSunInfo(sessionData SessionData) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Event Type", "Timestamp", "Local Time", "UTC"})
 
-	// Function to format Unix timestamp to readable string
-	formatLocalDateTime := func(unixTime int64) string {
-		// Check if unixTime needs division by 1000 to convert milliseconds to seconds
-		return time.Unix(unixTime, 0).Local().Format("15:04 MST")
-	}
-
-	formatUTCDateTime := func(unixTime int64) string {
-		// Check if unixTime needs division by 1000 to convert milliseconds to seconds
-		return time.Unix(unixTime, 0).UTC().Format("15:04 MST")
-	}
-
 	// Define a slice of event types and corresponding times
 	events := []struct {
 		EventType string
@@ -103,56 +92,56 @@ func fetchSunInfo(sessionData SessionData) {
 		{
 			"Sunrise",
 			strconv.FormatInt(sunInfo.Sunrise, 10),
-			formatLocalDateTime(sunInfo.Sunrise),
-			formatUTCDateTime(sunInfo.Sunrise),
+			helpers.FormatLocalDateTime(sunInfo.Sunrise),
+			helpers.FormatUTCDateTime(sunInfo.Sunrise),
 		},
 		{
 			"Sunset",
 			strconv.FormatInt(sunInfo.Sunset, 10),
-			formatLocalDateTime(sunInfo.Sunset),
-			formatUTCDateTime(sunInfo.Sunset),
+			helpers.FormatLocalDateTime(sunInfo.Sunset),
+			helpers.FormatUTCDateTime(sunInfo.Sunset),
 		},
 		{
 			"Solar Noon",
 			strconv.FormatInt(sunInfo.Transit, 10),
-			formatLocalDateTime(sunInfo.Transit),
-			formatUTCDateTime(sunInfo.Transit),
+			helpers.FormatLocalDateTime(sunInfo.Transit),
+			helpers.FormatUTCDateTime(sunInfo.Transit),
 		},
 		{
 			"Civil Twilight Begin",
 			strconv.FormatInt(sunInfo.CivilTwilightBegin, 10),
-			formatLocalDateTime(sunInfo.CivilTwilightBegin),
-			formatUTCDateTime(sunInfo.CivilTwilightBegin),
+			helpers.FormatLocalDateTime(sunInfo.CivilTwilightBegin),
+			helpers.FormatUTCDateTime(sunInfo.CivilTwilightBegin),
 		},
 		{
 			"Civil Twilight End",
 			strconv.FormatInt(sunInfo.CivilTwilightEnd, 10),
-			formatLocalDateTime(sunInfo.CivilTwilightEnd),
-			formatUTCDateTime(sunInfo.CivilTwilightEnd),
+			helpers.FormatLocalDateTime(sunInfo.CivilTwilightEnd),
+			helpers.FormatUTCDateTime(sunInfo.CivilTwilightEnd),
 		},
 		{
 			"Nautical Twilight Begin",
 			strconv.FormatInt(sunInfo.NauticalTwilightBegin, 10),
-			formatLocalDateTime(sunInfo.NauticalTwilightBegin),
-			formatUTCDateTime(sunInfo.NauticalTwilightBegin),
+			helpers.FormatLocalDateTime(sunInfo.NauticalTwilightBegin),
+			helpers.FormatUTCDateTime(sunInfo.NauticalTwilightBegin),
 		},
 		{
 			"Nautical Twilight End",
 			strconv.FormatInt(sunInfo.NauticalTwilightEnd, 10),
-			formatLocalDateTime(sunInfo.NauticalTwilightEnd),
-			formatUTCDateTime(sunInfo.NauticalTwilightEnd),
+			helpers.FormatLocalDateTime(sunInfo.NauticalTwilightEnd),
+			helpers.FormatUTCDateTime(sunInfo.NauticalTwilightEnd),
 		},
 		{
 			"Astronomical Twilight Begin",
 			strconv.FormatInt(sunInfo.AstronomicalTwilightBegin, 10),
-			formatLocalDateTime(sunInfo.AstronomicalTwilightBegin),
-			formatUTCDateTime(sunInfo.AstronomicalTwilightBegin),
+			helpers.FormatLocalDateTime(sunInfo.AstronomicalTwilightBegin),
+			helpers.FormatUTCDateTime(sunInfo.AstronomicalTwilightBegin),
 		},
 		{
 			"Astronomical Twilight End",
 			strconv.FormatInt(sunInfo.AstronomicalTwilightEnd, 10),
-			formatLocalDateTime(sunInfo.AstronomicalTwilightEnd),
-			formatUTCDateTime(sunInfo.AstronomicalTwilightEnd),
+			helpers.FormatLocalDateTime(sunInfo.AstronomicalTwilightEnd),
+			helpers.FormatUTCDateTime(sunInfo.AstronomicalTwilightEnd),
 		},
 	}
 
