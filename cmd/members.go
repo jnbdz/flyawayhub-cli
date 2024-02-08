@@ -34,7 +34,7 @@ type MemberPermission struct {
 	OnlineBooking Permission `json:"online_booking"`
 }
 
-func HandleMembersCommand() {
+func HandleMembersCommand(output string) {
 	sessionData, err := LoadSession()
 	if err != nil {
 		fmt.Println("Error loading session:", err)
@@ -94,7 +94,13 @@ func fetchMembers(sessionData SessionData) {
 
 	// Now `flights` is populated with data from `body`, proceed to create the table
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"#", "User ID", "Name", "Email", "Phone Number", "Is Vaccinated"})
+	table.SetHeader([]string{
+		"#",
+		"User ID",
+		"Name",
+		"Email",
+		"Phone Number",
+		"Is Vaccinated"})
 
 	var i = 0
 	for _, member := range members {

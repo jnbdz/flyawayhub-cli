@@ -25,17 +25,17 @@ type SunInfo struct {
 	AstronomicalTwilightEnd   int64 `json:"astronomical_twilight_end"`
 }
 
-func HandleSunInfoCommand() {
+func HandleSunInfoCommand(output string) {
 	sessionData, err := LoadSession()
 	if err != nil {
 		fmt.Println("Error loading session:", err)
 		return
 	}
 
-	fetchSunInfo(*sessionData)
+	fetchSunInfo(*sessionData, output)
 }
 
-func fetchSunInfo(sessionData SessionData) {
+func fetchSunInfo(sessionData SessionData, output string) {
 	url := config.APIEndpoint("locations/%s/suninfo")
 
 	client := &http.Client{}
@@ -80,7 +80,11 @@ func fetchSunInfo(sessionData SessionData) {
 
 	// Create and populate the table
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Event Type", "Timestamp", "Local Time", "UTC"})
+	table.SetHeader([]string{
+		"Event Type",
+		"Timestamp",
+		"Local Time",
+		"UTC"})
 
 	// Define a slice of event types and corresponding times
 	events := []struct {
@@ -147,7 +151,11 @@ func fetchSunInfo(sessionData SessionData) {
 
 	// Iterate over events to populate the table
 	for _, event := range events {
-		table.Append([]string{event.EventType, event.timestamp, event.LocalTime, event.UTCTime})
+		table.Append([]string{
+			event.EventType,
+			event.timestamp,
+			event.LocalTime,
+			event.UTCTime})
 	}
 
 	// Render the table to stdout
