@@ -9,7 +9,7 @@ import (
 )
 
 // FetchOrganizationInfo fetches organization information and updates the session
-func FetchOrganizationInfo(accessToken string) error {
+func FetchOrganizationInfo(accessToken, output string) error {
 	sessionData, err := LoadSession()
 	if err != nil {
 		return fmt.Errorf("loading session: %w", err)

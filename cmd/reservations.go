@@ -40,7 +40,7 @@ type ResourceDetail struct {
 }
 
 // HandleReservationsCommand fetches and displays reservations
-func HandleReservationsCommand() {
+func HandleReservationsCommand(output string) {
 	sessionData, err := LoadSession()
 	if err != nil {
 		fmt.Println("Error loading session:", err)
@@ -101,7 +101,15 @@ func fetchReservations(sessionData SessionData) {
 
 	// Now `flights` is populated with data from `body`, proceed to create the table
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"#", "ID", "Date", "Flight Type", "Start", "End", "Aircraft", "Crew"})
+	table.SetHeader([]string{
+		"#",
+		"ID",
+		"Date",
+		"Flight Type",
+		"Start",
+		"End",
+		"Aircraft",
+		"Crew"})
 
 	var i = 0
 	for _, flight := range flights {

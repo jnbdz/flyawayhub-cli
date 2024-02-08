@@ -40,20 +40,17 @@ type NotificationType struct {
 	Name string `json:"name"`
 }
 
-func HandleNotificationsCommand() {
+func HandleNotificationsCommand(page, limit, output string) {
 	sessionData, err := LoadSession()
 	if err != nil {
 		fmt.Println("Error loading session:", err)
 		return
 	}
 
-	fetchNotifications(*sessionData)
+	fetchNotifications(*sessionData, page, limit, output)
 }
 
-func fetchNotifications(sessionData SessionData) {
-	// https://api.prod.flyawayhub.com/v1/notifications/all?page=0&limit=20
-	page := "0"
-	limit := "20"
+func fetchNotifications(sessionData SessionData, page, limit, output string) {
 	reqURL := config.APIEndpoint("notifications/all?page=" + page + "&limit=" + limit)
 
 	client := &http.Client{}
@@ -94,8 +91,26 @@ func fetchNotifications(sessionData SessionData) {
 		return
 	}
 
+	if output == "json" {
+		// If the user requests JSON output, marshal the response and print it
+		jsonResponse, err := json.MarshalIndent(response, "", "  ")
+		if err != nil {
+			fmt.Println("Error marshaling JSON:", err)
+			return
+		}
+		fmt.Println(string(jsonResponse))
+		return
+	}
+
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"#", "ID", "Message", "Short Message", "Notification Type Name", "Created At (Local Time)", "Created At (UTC)"})
+	table.SetHeader([]string{
+		"#",
+		"ID",
+		"Message",
+		"Short Message",
+		"Notification Type Name",
+		"Created At (Local Time)",
+		"Created At (UTC)"})
 
 	var i = 0
 	for _, notification := range response.Models.Notifications {
@@ -113,5 +128,4 @@ func fetchNotifications(sessionData SessionData) {
 	}
 
 	table.Render()
-
 }
