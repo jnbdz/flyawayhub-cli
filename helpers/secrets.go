@@ -5,7 +5,13 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
-func setSecret(service, account, secret string) {
+type SecretManager interface {
+	SetSecret(service, account, secret string) error
+	GetSecret(service, account string) (string, error)
+	DeleteSecret(service, account string) error
+}
+
+func SetSecret(service, account, secret string) {
 	err := keyring.Set(service, account, secret)
 	if err != nil {
 		fmt.Println("Failed to set secret:", err)
@@ -14,7 +20,7 @@ func setSecret(service, account, secret string) {
 	return
 }
 
-func getSecret(service, account string) string {
+func GetSecret(service, account string) string {
 	retrievedSecret, err := keyring.Get(service, account)
 	if err != nil {
 		fmt.Println("Failed to get secret:", err)
@@ -24,7 +30,7 @@ func getSecret(service, account string) string {
 	return retrievedSecret
 }
 
-func deleteSecret(service, user string) {
+func DeleteSecret(service, user string) {
 	err := keyring.Delete(service, user)
 	if err != nil {
 		fmt.Println("Failed to get secret:", err)
