@@ -1,9 +1,14 @@
 # Binaries for programs and plugins
+*.o
+*.a
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+*.prof
+*.pprof
+*.log
 
 # Test binary, built with `go test -c`
 *.test
@@ -11,8 +16,26 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+/bin
+cover.out
+cover.html
+
+# Folders
+_obj
+_test
+vendor
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+_testmain.go
 
 # Editors
 .idea
