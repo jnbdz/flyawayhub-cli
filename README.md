@@ -13,6 +13,7 @@ This project is in no way related to the company or website of [Flyawayhub](http
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjnbdz%2Fflyawayhub-cli.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjnbdz%2Fflyawayhub-cli?ref=badge_large)
+
 [ci-img]: https://github.com/jnbdz/flyawayhub-cli/actions/workflows/go.yml/badge.svg
 [ci]: https://github.com/jnbdz/flyawayhub-cli/actions/workflows/go.yml
 [cov-img]: https://codecov.io/gh/jnbdz/flyawayhub-cli/branch/master/graph/badge.svg
