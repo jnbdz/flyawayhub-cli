@@ -23,10 +23,28 @@ var (
 	username string
 )
 
-func init() {
-	// Initialize your logger here. This is a simplified example.
-	// In a real-world scenario, you might want to inject the logger as a dependency.
-	logger = logging.NewZapLogger()
+// LoginCommand Define a struct to hold dependencies for the login command.
+type LoginCommand struct {
+	logger logging.Logger
+	// Add other dependencies here
+}
+
+// NewLoginCommand creates a new login cobra.Command with dependencies injected.
+func NewLoginCommand(logger logging.Logger) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "login",
+		Short: "Login will sign you in to " + appConfig.AppName + " (will generate an authorization bearer).",
+		Run: func(cmd *cobra.Command, args []string) {
+			logger.Info("Starting login process")
+			// Your login logic here...
+			if err := loginProcess(); err != nil {
+				logger.Error("Login process failed", "error", err)
+				return
+			}
+			logger.Info("Login process completed successfully")
+		},
+	}
+	return cmd
 }
 
 func sendCredentials(username, password string) {
