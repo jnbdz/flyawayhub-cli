@@ -3,6 +3,8 @@ package cmd
 import (
 	"bufio"
 	"context"
+	appConfig "flyawayhub-cli/config"
+	"flyawayhub-cli/logging"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
 	"os"
@@ -16,16 +18,22 @@ import (
 )
 
 var (
-	appName  = "Flyawayhub"
+	logger   logging.Logger
 	cfgFile  string
 	username string
 )
 
+func init() {
+	// Initialize your logger here. This is a simplified example.
+	// In a real-world scenario, you might want to inject the logger as a dependency.
+	logger = logging.NewZapLogger()
+}
+
 func sendCredentials(username, password string) {
 	// Load AWS configuration
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-west-2"))
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(appConfig.AWSCognitoRegion))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "unable to load SDK config, %v\n", err)
+		logger.Error("Unable to load SDK config", "error", err)
 		return
 	}
 
@@ -33,7 +41,7 @@ func sendCredentials(username, password string) {
 	svc := cognitoidentityprovider.NewFromConfig(cfg)
 
 	// Replace these values with your Cognito app's details
-	clientId := "" // <-- Replace with your actual client ID
+	clientId := appConfig.AWSCognitoClientID
 
 	// Perform the authentication request
 	authResp, err := svc.InitiateAuth(context.TODO(), &cognitoidentityprovider.InitiateAuthInput{
@@ -45,20 +53,20 @@ func sendCredentials(username, password string) {
 		ClientId: aws.String(clientId),
 	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "authentication failed: %v\n", err)
+		logger.Error("authentication failed: %v\n", err)
 		return
 	}
 
 	// Fetch and update session with organization info
-	if err := FetchOrganizationInfo(*authResp.AuthenticationResult.AccessToken); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to fetch organization info: %v\n", err)
+	if err := FetchOrganizationInfo(*authResp.AuthenticationResult.AccessToken, "json"); err != nil {
+		logger.Error("Failed to fetch organization info: %v\n", err)
 		// Decide how you want to handle this error. For now, just printing the error.
 	}
 }
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "Login will sign you in to " + appName + " (will generate an authorization bearer).",
+	Short: "Login will sign you in to " + appConfig.AppName + " (will generate an authorization bearer).",
 	Run:   login,
 }
 
