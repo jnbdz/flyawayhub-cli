@@ -29,6 +29,7 @@ func SetSecret(service, account, secret string) error {
 		return fmt.Errorf("failed to set secret for %s/%s: %w", service, account, err)
 	}
 	logger.Info("Secret set successfully", "service", service, "account", account)
+
 	return nil
 }
 

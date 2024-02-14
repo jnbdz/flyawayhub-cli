@@ -67,15 +67,22 @@ func (m *MockKeyring) Delete(service, account string) error {
 // Example of testing SetSecret assuming you can inject a mock keyring and logger.
 func TestSetSecret(t *testing.T) {
 	mockLogger := new(MockLogger)
-	mockLogger.On("Error", mock.Anything, mock.Anything).Once()
-	mockLogger.On("Info", mock.Anything, mock.Anything).Once()
+
+	// Adjust to match the exact logging messages and key-value pairs used in your SetSecret function
+	infoMsg := "Secret set successfully"
+	service := "service"
+	account := "account"
+	secret := "secret"
+
+	// Assuming the error path is not triggered for this test, only Info should be called
+	mockLogger.On("Info", infoMsg, []interface{}{"service", service, "account", account}).Once()
 
 	// Set the mockLogger as the global logger
 	logging.SetLogger(mockLogger)
 	defer logging.ResetLogger()
 
-	// Call your function - this is pseudo-code, adjust based on actual keyring abstraction.
-	err := SetSecret("service", "account", "secret")
+	// Call your function
+	err := SetSecret(service, account, secret)
 
 	assert.NoError(t, err)
 	mockLogger.AssertExpectations(t)
