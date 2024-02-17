@@ -78,16 +78,26 @@ func fetchNotifications(sessionData SessionData, page, limit, output string) {
 		}
 	}(resp.Body)
 
+	statusCode := resp.StatusCode
+
+	if statusCode == 401 {
+
+	} else if statusCode >= 500 && statusCode <= 599 {
+
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("Error reading response:", err)
 		return
 	}
 
+	println(string(body))
+
 	var response ApiResponse
 	err = json.Unmarshal([]byte(body), &response)
 	if err != nil {
-		fmt.Println("Error unmarshaling JSON:", err)
+		fmt.Println("Error unmarshalling JSON:", err)
 		return
 	}
 

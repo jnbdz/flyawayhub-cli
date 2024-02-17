@@ -489,14 +489,81 @@ func fetchResourcesSchedule(sessionData SessionData) {
 	table.Render()
 }
 
+func generateTable() {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"Resources",
+		"0600",
+		"0700",
+		"0800",
+		"0900",
+		"1000",
+		"1100",
+		"1200",
+		"1300",
+		"1400",
+		"1500",
+		"1600",
+		"1700",
+		"1800",
+		"1900",
+		"2000",
+		"2100",
+		"2200",
+	})
+
+	/*var i = 0
+	for _, instructor := range instructors {
+		row := []string{
+			strconv.Itoa(i),
+			instructor.ID,
+			instructor.UserID,
+			instructor.Display,
+			instructor.Locations[0].LocationID,
+			instructor.Locations[0].Display,
+		}
+		table.Append(row)
+		i++
+	}*/
+
+	row := []string{
+		"Redbird",
+		"C-FHNO",
+		"C-FBWU",
+		"C-GADF",
+		"C-GKJF",
+		"Brad Parker",
+		"Chloé Viola",
+		"Claudio Guedes",
+		"Deborah Marshall",
+		"Jeremy Rodriguez-Ruis",
+		"Martin Rabin",
+		"Sebastien Hochart",
+	}
+	table.Append(row)
+
+	rowTwo := []string{
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+	}
+	table.Append(rowTwo)
+
+	table.Render()
+}
+
 func fetchSchedules(sessionData SessionData, output string) {
 	//fetchAircraftsOrganization(sessionData)
 	//fetchInstructors(sessionData)
 	//fetchFlightTypes(sessionData)
 	//fetchMembersPeople(sessionData)
-	fetchResourcesSchedule(sessionData)
+	//fetchResourcesSchedule(sessionData)
+	generateTable()
 
-	url := config.APIEndpoint("resources/organization/%s/schedule")
+	/*url := config.APIEndpoint("resources/organization/%s/schedule")
 
 	client := &http.Client{}
 	reqURL := fmt.Sprintf(url, sessionData.Id)
@@ -559,10 +626,10 @@ func fetchSchedules(sessionData SessionData, output string) {
 		i++
 	}
 
-	table.Render()
+	table.Render()*/
 }
 
 // DONE! flight type https://api.prod.flyawayhub.com/v1/flighttypes/78114770-a7e3-11eb-bd86-acde48001122
 // DONE! people https://api.prod.flyawayhub.com/v1/members/78114770-a7e3-11eb-bd86-acde48001122/people?expand=location
-// resources schedule https://api.prod.flyawayhub.com/v1/resources/78114770-a7e3-11eb-bd86-acde48001122/schedule?start_time=1704728168&end_time=1738856168&resources={"aircraft":["76ace3fb-6e7c-11ee-8d38-025d5774c5eb","fdd28866-a7e2-11eb-bd86-acde48001122","fdd288fc-a7e2-11eb-bd86-acde48001122","89ed2ac9-9eb4-11ec-9414-025d5774c5eb","25779fa2-a1f3-11ec-9414-025d5774c5eb"],"instructor":["5a505e0b-bc24-11ec-9414-025d5774c5eb","ddb5b2b2-03b6-11ee-8d38-025d5774c5eb","b4c61062-cf2b-11ed-b69f-025d5774c5eb","469f652a-a7e1-11eb-bd86-acde48001122","bbfb41b0-132e-11ed-9414-025d5774c5eb","a7c52203-4cd7-11ee-8d38-025d5774c5eb","469f6732-a7e1-11eb-bd86-acde48001122"]}
+// DONE! resources schedule https://api.prod.flyawayhub.com/v1/resources/78114770-a7e3-11eb-bd86-acde48001122/schedule?start_time=1704728168&end_time=1738856168&resources={"aircraft":["76ace3fb-6e7c-11ee-8d38-025d5774c5eb","fdd28866-a7e2-11eb-bd86-acde48001122","fdd288fc-a7e2-11eb-bd86-acde48001122","89ed2ac9-9eb4-11ec-9414-025d5774c5eb","25779fa2-a1f3-11ec-9414-025d5774c5eb"],"instructor":["5a505e0b-bc24-11ec-9414-025d5774c5eb","ddb5b2b2-03b6-11ee-8d38-025d5774c5eb","b4c61062-cf2b-11ed-b69f-025d5774c5eb","469f652a-a7e1-11eb-bd86-acde48001122","bbfb41b0-132e-11ed-9414-025d5774c5eb","a7c52203-4cd7-11ee-8d38-025d5774c5eb","469f6732-a7e1-11eb-bd86-acde48001122"]}
 // Reservations public https://api.prod.flyawayhub.com/v1/reservations/78114770-a7e3-11eb-bd86-acde48001122/public?expand=resources.resource.phone_number&resources={"dispatcher":[],"room":[],"aircraft":["76ace3fb-6e7c-11ee-8d38-025d5774c5eb","fdd28866-a7e2-11eb-bd86-acde48001122","fdd288fc-a7e2-11eb-bd86-acde48001122","89ed2ac9-9eb4-11ec-9414-025d5774c5eb","25779fa2-a1f3-11ec-9414-025d5774c5eb"],"instructor":["5a505e0b-bc24-11ec-9414-025d5774c5eb","ddb5b2b2-03b6-11ee-8d38-025d5774c5eb","b4c61062-cf2b-11ed-b69f-025d5774c5eb","469f652a-a7e1-11eb-bd86-acde48001122","bbfb41b0-132e-11ed-9414-025d5774c5eb","a7c52203-4cd7-11ee-8d38-025d5774c5eb","469f6732-a7e1-11eb-bd86-acde48001122"]}&start_time=1707282001&end_time=1707368399&personal=false
