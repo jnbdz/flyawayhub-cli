@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"context"
+	"flyawayhub-cli/auth"
 	appConfig "flyawayhub-cli/config"
 	"flyawayhub-cli/logging"
 	"fmt"
@@ -18,41 +19,79 @@ import (
 )
 
 var (
-	logger   logging.Logger
-	cfgFile  string
-	username string
+	logger logging.Logger
 )
 
-// LoginCommand Define a struct to hold dependencies for the login command.
-type LoginCommand struct {
-	logger logging.Logger
-	// Add other dependencies here
+type authService struct{}
+
+// Login
+func (s *authService) Login(ctx context.Context) error {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter Username: ")
+	username, _ := reader.ReadString('\n')
+	username = strings.TrimSpace(username)
+
+	fmt.Print("Enter Password: ")
+	bytePassword, _ := terminal.ReadPassword(0)
+	password := string(bytePassword)
+
+	return sendCredentials(ctx, username, password)
 }
 
-// NewLoginCommand creates a new login cobra.Command with dependencies injected.
-func NewLoginCommand(logger logging.Logger) *cobra.Command {
+func loginProcess(ctx context.Context, username, password string) error {
+	err := sendCredentials(ctx, username, password)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// NewLoginCommand updated to use loginProcess within the Run function.
+func NewLoginCommand(authService auth.Service, logger logging.Logger) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Login will sign you in to " + appConfig.AppName + " (will generate an authorization bearer).",
-		Run: func(cmd *cobra.Command, args []string) {
-			logger.Info("Starting login process")
-			// Your login logic here...
-			if err := loginProcess(); err != nil {
-				logger.Error("Login process failed", "error", err)
-				return
+		Short: "Login will sign you in to " + appConfig.AppName,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := context.Background() // Or context.TODO() if unsure
+
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Enter Username: ")
+			username, err := reader.ReadString('\n')
+			if err != nil {
+				logger.Error("Error reading username", "error", err)
+				return err
 			}
-			logger.Info("Login process completed successfully")
+			username = strings.TrimSpace(username)
+
+			fmt.Print("Enter Password: ")
+			bytePassword, err := terminal.ReadPassword(0)
+			if err != nil {
+				logger.Error("Error reading password", "error", err)
+				return err
+			}
+			password := string(bytePassword)
+
+			// Use authService to perform login
+			err = authService.Login(ctx, username, password)
+			if err != nil {
+				logger.Error("Login process failed", "error", err)
+				return err
+			}
+
+			logger.Info("Login successful")
+			return nil
 		},
 	}
 	return cmd
 }
 
-func sendCredentials(username, password string) {
+// sendCredentials
+func sendCredentials(ctx context.Context, username, password string) error {
 	// Load AWS configuration
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(appConfig.AWSCognitoRegion))
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(appConfig.AWSCognitoRegion))
 	if err != nil {
 		logger.Error("Unable to load SDK config", "error", err)
-		return
+		return err
 	}
 
 	// Create a Cognito Identity Provider client
@@ -72,7 +111,7 @@ func sendCredentials(username, password string) {
 	})
 	if err != nil {
 		logger.Error("authentication failed: %v\n", err)
-		return
+		return err
 	}
 
 	// Fetch and update session with organization info
@@ -80,6 +119,9 @@ func sendCredentials(username, password string) {
 		logger.Error("Failed to fetch organization info: %v\n", err)
 		// Decide how you want to handle this error. For now, just printing the error.
 	}
+
+	logger.Info("Login successful")
+	return nil
 }
 
 var loginCmd = &cobra.Command{
@@ -89,6 +131,7 @@ var loginCmd = &cobra.Command{
 }
 
 func login(cmd *cobra.Command, args []string) {
+	ctx := context.Background() // Or context.TODO() if unsure
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter Username: ")
 	username, _ := reader.ReadString('\n')
@@ -97,13 +140,16 @@ func login(cmd *cobra.Command, args []string) {
 	fmt.Print("Enter Password: ")
 	bytePassword, err := terminal.ReadPassword(0)
 	if err != nil {
-		fmt.Println("\nError reading password")
+		logger.Error("\nError reading password")
 		return
 	}
 	password := string(bytePassword)
 
 	// Send credentials using the AWS SDK
-	sendCredentials(username, password)
+	err = sendCredentials(ctx, username, password)
+	if err != nil {
+		return
+	}
 }
 
 func InitCommands(root *cobra.Command) {
