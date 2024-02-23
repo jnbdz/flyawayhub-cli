@@ -99,7 +99,7 @@ func saveSession(data SessionData) error {
 	return nil
 }
 
-// loadSession loads session data from a file
+// LoadSession loads session data from a file
 func LoadSession() (*SessionData, error) {
 	path, err := getSessionFilePath()
 	if err != nil {

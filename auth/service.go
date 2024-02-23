@@ -19,8 +19,7 @@ type Service interface {
 	Login(
 		ctx context.Context,
 		username,
-		password string,
-		triggerFetchOrganizationInfo func(accessToken string) error) error
+		password string) (string, error)
 }
 
 // authService implements the Service interface.
@@ -37,13 +36,12 @@ func NewAuthService(logger logging.Logger) Service {
 func (s *authService) Login(
 	ctx context.Context,
 	username,
-	password string,
-	triggerFetchOrganizationInfo func(accessToken string) error) error {
+	password string) (string, error) {
 	// Load AWS configuration
 	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(appConfig.AWSCognitoRegion))
 	if err != nil {
 		s.logger.Error("Unable to load SDK config", "error", err)
-		return err
+		return "", err
 	}
 
 	// Create a Cognito Identity Provider client
@@ -63,16 +61,13 @@ func (s *authService) Login(
 	})
 	if err != nil {
 		s.logger.Error("authentication failed: %v\n", err)
-		return err
+		return "", err
 	}
 
 	// Fetch and update session with organization info
 	// FetchOrganizationInfo(*authResp.AuthenticationResult.AccessToken, "json")
-	if err := triggerFetchOrganizationInfo(*authResp.AuthenticationResult.AccessToken); err != nil {
-		s.logger.Error("Failed to fetch organization info: %v\n", err)
-		// Decide how you want to handle this error. For now, just printing the error.
-	}
+	accessToken := *authResp.AuthenticationResult.AccessToken
 
 	s.logger.Info("Login successful")
-	return nil
+	return accessToken, nil
 }

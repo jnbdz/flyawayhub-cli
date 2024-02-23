@@ -1,6 +1,8 @@
 package api
 
 import (
+	"flyawayhub-cli/auth"
+	"flyawayhub-cli/cmd"
 	appConfig "flyawayhub-cli/config"
 	"flyawayhub-cli/logging"
 	"fmt"
@@ -22,6 +24,26 @@ type LoginCommand struct {
 	// Add other dependencies here
 }
 
+type BasicHttpClient struct {
+	httpClient  *http.Client
+	authService auth.Service
+	logger      logging.Logger
+}
+
+// NewBasicHttpClient creates a new instance of BasicHttpClient with the provided dependencies.
+func NewBasicHttpClient(authService auth.Service, logger logging.Logger) *BasicHttpClient {
+	return &BasicHttpClient{
+		httpClient:  &http.Client{}, // Initialize as needed.
+		authService: authService,
+		logger:      logger,
+	}
+}
+
+type HttpClient interface {
+	Get(endpoint, accessToken string) ([]byte, error)
+	Post(endpoint, accessToken string) ([]byte, error)
+}
+
 // setHeaders sets common headers for the HTTP request.
 func setHeaders(req *http.Request, accessToken string) {
 	req.Header.Set("Authorization", "Bearer "+accessToken)
@@ -31,7 +53,7 @@ func setHeaders(req *http.Request, accessToken string) {
 
 // handleHttpResponseStatus evaluates HTTP response status codes and logs or returns appropriate errors.
 // It is designed to complement custom redirection handling and provide specific logging or error handling based on the response status.
-func handleHttpResponseStatus(statusCode int, status string) error {
+func handleHttpResponseStatus(authService auth.Service, logger logging.Logger, statusCode int, status string) error {
 	switch {
 	case statusCode >= 100 && statusCode <= 199:
 		// Informational responses
@@ -50,7 +72,7 @@ func handleHttpResponseStatus(statusCode int, status string) error {
 	case statusCode == 401 || statusCode == 403:
 		// Client error responses: Unauthorized or Forbidden
 		logger.Warn("Client error response", "status", status)
-		if err := authCallback(); err != nil {
+		if err := cmd.PromptForLogin(authService, logger); err != nil {
 			return fmt.Errorf("authentication error: %s, %w", status, err)
 		}
 		return fmt.Errorf("authentication error: %s", status)
@@ -78,7 +100,7 @@ func handleHttpResponseStatus(statusCode int, status string) error {
 }
 
 // Get performs a GET request and returns the raw response body.
-func Get(endpoint, accessToken string) ([]byte, error) {
+func (c *BasicHttpClient) Get(endpoint, accessToken string) ([]byte, error) {
 	reqURL := appConfig.APIEndpoint(endpoint)
 
 	client := &http.Client{
@@ -128,7 +150,7 @@ func Get(endpoint, accessToken string) ([]byte, error) {
 		return nil, fmt.Errorf("error reading response: %w", err)
 	}
 
-	err = handleHttpResponseStatus(resp.StatusCode, resp.Status)
+	err = handleHttpResponseStatus(c.authService, c.logger, resp.StatusCode, resp.Status)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +159,7 @@ func Get(endpoint, accessToken string) ([]byte, error) {
 }
 
 // Post performs a POST request and returns the raw response body.
-func Post(logger logging.Logger, endpoint, accessToken string) ([]byte, error) {
+func (c *BasicHttpClient) Post(logger logging.Logger, endpoint, accessToken string) ([]byte, error) {
 	reqURL := appConfig.APIEndpoint(endpoint)
 
 	client := &http.Client{}
